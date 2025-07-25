@@ -1,0 +1,52 @@
+{
+  "menuItems": [
+    {
+      "id": 1,
+      "name": "Signature Espresso",
+      "category": "Coffee",
+      "price": "$4.50",
+      "description": "Rich and bold espresso made from our exclusive blend of Brazilian and Ethiopian beans",
+      "image": "https://images.unsplash.com/photo-1510707577719-ae7c14805e3a?w=400&h=300&fit=crop"
+    },
+    {
+      "id": 2,
+      "name": "Caramel Macchiato",
+      "category": "Coffee",
+      "price": "$5.75",
+      "description": "Smooth espresso with steamed milk, vanilla syrup, and a caramel drizzle",
+      "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=300&fit=crop"
+    },
+    {
+      "id": 3,
+      "name": "Chocolate Croissant",
+      "category": "Pastry",
+      "price": "$4.25",
+      "description": "Flaky, buttery croissant filled with rich dark chocolate, baked fresh daily",
+      "image": "https://images.unsplash.com/photo-1530610476181-d83430b64dcd?w=400&h=300&fit=crop"
+    },
+    {
+      "id": 4,
+      "name": "Avocado Toast",
+      "category": "Food",
+      "price": "$9.50",
+      "description": "Smashed avocado on artisan sourdough with poached eggs, cherry tomatoes, and feta",
+      "image": "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=400&h=300&fit=crop"
+    },
+    {
+      "id": 5,
+      "name": "Berry Smoothie Bowl",
+      "category": "Healthy",
+      "price": "$8.75",
+      "description": "Açaí blend topped with granola, fresh berries, coconut flakes, and honey",
+      "image": "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=400&h=300&fit=crop"
+    },
+    {
+      "id": 6,
+      "name": "Matcha Latte",
+      "category": "Specialty",
+      "price": "$5.25",
+      "description": "Premium Japanese matcha whisked with steamed oat milk and a touch of vanilla",
+      "image": "https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=400&h=300&fit=crop"
+    }
+  ]
+}

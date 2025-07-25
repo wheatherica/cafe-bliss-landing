@@ -1,0 +1,32 @@
+{
+  "name": "Café Bliss - Premium Coffee Experience",
+  "short_name": "Café Bliss",
+  "description": "Experience the finest coffee and delicious treats at Café Bliss",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF8E7",
+  "theme_color": "#6B4423",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://api.dicebear.com/7.x/shapes/svg?seed=cafebliss&size=192",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://api.dicebear.com/7.x/shapes/svg?seed=cafebliss&size=512",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["food", "lifestyle", "business"],
+  "screenshots": [
+    {
+      "src": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&h=630",
+      "sizes": "1200x630",
+      "type": "image/jpeg"
+    }
+  ]
+}

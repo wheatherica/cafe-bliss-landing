@@ -1,0 +1,48 @@
+{
+  "name": "cafe-bliss-landing",
+  "version": "2.0.0",
+  "description": "Enterprise-grade landing page with A/B testing, analytics, and PWA capabilities",
+  "main": "index.html",
+  "scripts": {
+    "serve": "npx http-server -p 3000 -c-1",
+    "test:lighthouse": "lighthouse http://localhost:3000 --view",
+    "analyze": "npx bundle-buddy *.js",
+    "format": "prettier --write \"**/*.{js,html,css,json,md}\"",
+    "validate:html": "html-validate index.html",
+    "validate:css": "stylelint \"**/*.css\"",
+    "validate:js": "eslint \"**/*.js\"",
+    "validate:all": "npm run validate:html && npm run validate:css && npm run validate:js",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "landing-page",
+    "pwa",
+    "a-b-testing",
+    "analytics",
+    "cafe",
+    "restaurant",
+    "conversion-optimization",
+    "dark-mode",
+    "multi-language",
+    "gsap",
+    "tailwind"
+  ],
+  "author": "Professional Web Developer",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0",
+    "stylelint": "^15.0.0",
+    "html-validate": "^7.0.0",
+    "lighthouse": "^11.0.0",
+    "http-server": "^14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
