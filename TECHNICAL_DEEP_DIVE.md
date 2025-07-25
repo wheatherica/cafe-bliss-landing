@@ -222,7 +222,7 @@ describe('Analytics Module', () => {
 ### 2. E2E Testing Scenarios
 - Form submission flow
 - Dark mode toggle persistence
-- Language switching
+- SEO optimization
 - A/B test variant assignment
 
 ### 3. Performance Testing

@@ -9,53 +9,12 @@ let performanceData = {
     lastTime: performance.now()
 };
 
-// Language translations
-const translations = {
-    en: {
-        welcome: 'Welcome to Café Bliss',
-        tagline: 'Where Every Cup Tells a Story',
-        artisan: 'Artisan Coffee',
-        crafted: 'Crafted with Passion, Served with Love',
-        fresh: 'Fresh Daily',
-        treats: 'Delicious Treats & Premium Blends',
-        menu: 'Our Menu',
-        contact: 'Get in Touch',
-        name: 'Name',
-        email: 'Email',
-        message: 'Message',
-        reservation: 'Reservation Date',
-        send: 'Send Message',
-        visit: 'Visit Us',
-        hours: 'Business Hours',
-        follow: 'Follow Us',
-        required: 'This field is required',
-        invalidEmail: 'Please enter a valid email address',
-        thankYou: 'Thank you for your message! We will get back to you soon.'
-    },
-    ja: {
-        welcome: 'カフェ・ブリスへようこそ',
-        tagline: 'すべてのカップに物語がある',
-        artisan: '職人のコーヒー',
-        crafted: '情熱を込めて作り、愛を込めて提供',
-        fresh: '毎日新鮮',
-        treats: 'おいしいお菓子とプレミアムブレンド',
-        menu: 'メニュー',
-        contact: 'お問い合わせ',
-        name: 'お名前',
-        email: 'メールアドレス',
-        message: 'メッセージ',
-        reservation: '予約日',
-        send: 'メッセージを送信',
-        visit: 'アクセス',
-        hours: '営業時間',
-        follow: 'フォローする',
-        required: 'この項目は必須です',
-        invalidEmail: '有効なメールアドレスを入力してください',
-        thankYou: 'お問い合わせありがとうございます。すぐにご連絡いたします。'
-    }
+// Static text messages in English
+const messages = {
+    required: 'This field is required',
+    invalidEmail: 'Please enter a valid email address',
+    thankYou: 'Thank you for your message! We will get back to you soon.'
 };
-
-let currentLang = localStorage.getItem('preferredLanguage') || 'en';
 
 // Cookie Consent
 function initCookieConsent() {
@@ -210,7 +169,7 @@ function initContactForm() {
             }
             
             // Show success message with animation
-            showSuccessMessage(translations[currentLang].thankYou);
+            showSuccessMessage(messages.thankYou);
             form.reset();
         }
     });
@@ -244,14 +203,14 @@ function validateField(field) {
     
     // Check if empty
     if (!field.value.trim()) {
-        showError(field, errorElement, translations[currentLang].required);
+        showError(field, errorElement, messages.required);
         isValid = false;
     } 
     // Email validation
     else if (field.type === 'email') {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(field.value)) {
-            showError(field, errorElement, translations[currentLang].invalidEmail);
+            showError(field, errorElement, messages.invalidEmail);
             isValid = false;
         }
     }
@@ -390,38 +349,7 @@ function updateThemeIcon(theme) {
     }
 }
 
-// Language switching
-function initLanguageSwitch() {
-    const langToggle = document.getElementById('langToggle');
-    
-    if (langToggle) {
-        langToggle.value = currentLang;
-        updateLanguage(currentLang);
-        
-        langToggle.addEventListener('change', (e) => {
-            currentLang = e.target.value;
-            localStorage.setItem('preferredLanguage', currentLang);
-            updateLanguage(currentLang);
-            
-            // Track language change
-            if (window.analytics) {
-                window.analytics.track('language_changed', { language: currentLang });
-            }
-        });
-    }
-}
-
-function updateLanguage(lang) {
-    const t = translations[lang];
-    
-    // Update text content based on data attributes or specific selectors
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (t[key]) {
-            el.textContent = t[key];
-        }
-    });
-}
+// Removed language switching functionality
 
 // Lazy loading images
 function initLazyLoading() {
@@ -596,7 +524,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCookieConsent();
     initMobileMenu();
     initDarkMode();
-    initLanguageSwitch();
+    // Language switching removed
     initHeroSlider();
     loadMenuItems();
     initContactForm();
