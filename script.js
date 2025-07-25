@@ -103,42 +103,139 @@ async function loadMenuItems() {
 
 function createMenuCard(item) {
     const card = document.createElement('div');
-    card.className = 'menu-card bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer relative hover-lift';
+    card.className = 'menu-card bg-white rounded-xl shadow-lg overflow-hidden hover-lift transform transition-all duration-300 group';
     
     card.innerHTML = `
-        <div class="skeleton w-full h-48" data-skeleton></div>
-        <img data-src="${item.image}" alt="${item.name}" class="w-full h-48 object-cover lazy-load" loading="lazy">
-        <div class="p-6">
-            <span class="text-sm text-cafe-gold font-semibold">${item.category}</span>
-            <h3 class="text-xl font-bold text-gray-800 mt-2">${item.name}</h3>
-            <p class="text-cafe-brown font-bold mt-2">${item.price}</p>
+        <div class="relative overflow-hidden">
+            <div class="skeleton w-full h-56" data-skeleton></div>
+            <img data-src="${item.image}" alt="${item.name}" class="w-full h-56 object-cover lazy-load group-hover:scale-110 transition-transform duration-500" loading="lazy">
+            <div class="absolute top-4 left-4">
+                <span class="bg-cafe-gold text-cafe-brown px-3 py-1 rounded-full text-sm font-semibold shadow-lg">${item.category}</span>
+            </div>
+            <div class="absolute top-4 right-4">
+                <span class="bg-white bg-opacity-95 text-cafe-brown px-3 py-1 rounded-full text-lg font-bold shadow-lg">${item.price}</span>
+            </div>
         </div>
-        <div class="menu-popup absolute inset-0 bg-cafe-brown bg-opacity-95 text-white p-6 opacity-0 pointer-events-none transition-opacity duration-300">
-            <h3 class="text-2xl font-bold mb-2">${item.name}</h3>
-            <p class="mb-4">${item.description}</p>
-            <p class="text-2xl font-bold text-cafe-gold">${item.price}</p>
+        <div class="p-6">
+            <h3 class="text-2xl font-bold text-gray-800 mb-3 group-hover:text-cafe-brown transition-colors">${item.name}</h3>
+            <p class="text-gray-600 leading-relaxed mb-4">${item.description}</p>
+            <div class="flex items-center justify-between">
+                <button class="bg-cafe-brown text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-cafe-gold focus:ring-opacity-50">
+                    Order Now
+                </button>
+                <div class="flex space-x-1">
+                    ${generateStarRating(4.5)}
+                </div>
+            </div>
         </div>
     `;
     
     return card;
 }
 
-function initMenuCardEffects() {
+function generateStarRating(rating) {
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating % 1 !== 0;
+    let stars = '';
+    
+    for (let i = 0; i < fullStars; i++) {
+        stars += '<i class="fas fa-star text-yellow-400"></i>';
+    }
+    
+    if (hasHalfStar) {
+        stars += '<i class="fas fa-star-half-alt text-yellow-400"></i>';
+    }
+    
+    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    for (let i = 0; i < emptyStars; i++) {
+        stars += '<i class="far fa-star text-gray-300"></i>';
+    }
+    
+    return stars;
+}
+
+function initEnhancedMenuEffects() {
     const menuCards = document.querySelectorAll('.menu-card');
     
-    menuCards.forEach(card => {
-        const popup = card.querySelector('.menu-popup');
+    menuCards.forEach((card, index) => {
+        // Staggered animation on load
+        gsap.fromTo(card, 
+            { opacity: 0, y: 50 },
+            { 
+                opacity: 1, 
+                y: 0, 
+                duration: 0.6,
+                delay: index * 0.1,
+                ease: 'power2.out'
+            }
+        );
         
+        // Enhanced hover effects
         card.addEventListener('mouseenter', () => {
-            popup.style.opacity = '1';
-            popup.style.pointerEvents = 'auto';
+            gsap.to(card, {
+                y: -8,
+                boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
+                duration: 0.3,
+                ease: 'power2.out'
+            });
         });
         
         card.addEventListener('mouseleave', () => {
-            popup.style.opacity = '0';
-            popup.style.pointerEvents = 'none';
+            gsap.to(card, {
+                y: 0,
+                boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                duration: 0.3,
+                ease: 'power2.out'
+            });
         });
+        
+        // Order button click effect
+        const orderBtn = card.querySelector('button');
+        if (orderBtn) {
+            orderBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Ripple effect
+                const ripple = document.createElement('span');
+                const rect = orderBtn.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.className = 'absolute bg-white bg-opacity-30 rounded-full animate-ping';
+                
+                orderBtn.style.position = 'relative';
+                orderBtn.appendChild(ripple);
+                
+                // Track order button click
+                if (window.analytics) {
+                    const itemName = card.querySelector('h3').textContent;
+                    window.analytics.track('order_button_click', { item: itemName });
+                }
+                
+                // Show success feedback
+                showOrderFeedback(orderBtn);
+                
+                setTimeout(() => ripple.remove(), 600);
+            });
+        }
     });
+}
+
+function showOrderFeedback(button) {
+    const originalText = button.textContent;
+    button.textContent = 'Added to Cart!';
+    button.classList.add('bg-green-600');
+    button.classList.remove('bg-cafe-brown');
+    
+    setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('bg-green-600');
+        button.classList.add('bg-cafe-brown');
+    }, 2000);
 }
 
 // Form Validation
@@ -519,12 +616,318 @@ function initMicroInteractions() {
     });
 }
 
+// Enhanced scroll header effect
+function initScrollHeader() {
+    const header = document.querySelector('header');
+    header.style.transition = 'all 0.3s ease';
+    let lastScrollY = window.scrollY;
+    
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > 100) {
+            header.classList.add('bg-white', 'bg-opacity-95', 'shadow-xl');
+            header.style.backdropFilter = 'blur(10px)';
+        } else {
+            header.classList.remove('bg-white', 'bg-opacity-95', 'shadow-xl');
+            header.style.backdropFilter = 'none';
+        }
+        
+        // Hide header on scroll down, show on scroll up
+        if (currentScrollY > lastScrollY && currentScrollY > 200) {
+            header.style.transform = 'translateY(-100%)';
+        } else {
+            header.style.transform = 'translateY(0)';
+        }
+        
+        lastScrollY = currentScrollY;
+    });
+}
+
+// Scroll progress indicator
+function initScrollProgress() {
+    const progressBar = document.createElement('div');
+    progressBar.className = 'fixed top-0 left-0 h-1 bg-gradient-to-r from-cafe-brown to-cafe-gold z-50 transition-all duration-300';
+    progressBar.style.width = '0%';
+    document.body.appendChild(progressBar);
+    
+    window.addEventListener('scroll', () => {
+        const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+        progressBar.style.width = scrolled + '%';
+    });
+}
+
+// Animated statistics counter
+function initStatsCounter() {
+    const statsSection = document.createElement('section');
+    statsSection.className = 'py-16 gradient-bg';
+    statsSection.innerHTML = `
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center text-white">
+                <div class="stat-item">
+                    <div class="text-4xl font-bold mb-2" data-target="500">0</div>
+                    <div class="text-lg opacity-90">Happy Customers</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-4xl font-bold mb-2" data-target="50">0</div>
+                    <div class="text-lg opacity-90">Coffee Varieties</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-4xl font-bold mb-2" data-target="5">0</div>
+                    <div class="text-lg opacity-90">Years Experience</div>
+                </div>
+                <div class="stat-item">
+                    <div class="text-4xl font-bold mb-2" data-target="98">0</div>
+                    <div class="text-lg opacity-90">Satisfaction %</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Insert after menu section
+    const menuSection = document.getElementById('menu');
+    menuSection.parentNode.insertBefore(statsSection, menuSection.nextSibling);
+    
+    // Animate counters when in view
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCounter(entry.target);
+                observer.unobserve(entry.target);
+            }
+        });
+    });
+    
+    document.querySelectorAll('.stat-item').forEach(item => {
+        observer.observe(item);
+    });
+}
+
+function animateCounter(item) {
+    const counter = item.querySelector('[data-target]');
+    const target = parseInt(counter.getAttribute('data-target'));
+    const increment = target / 100;
+    let current = 0;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(timer);
+        }
+        counter.textContent = Math.floor(current);
+    }, 20);
+}
+
+// Floating Action Button
+function initFloatingActionButton() {
+    const fab = document.getElementById('fab');
+    const fabMenu = document.getElementById('fabMenu');
+    const fabIcon = fab.querySelector('i');
+    let isMenuOpen = false;
+    
+    fab.addEventListener('click', () => {
+        isMenuOpen = !isMenuOpen;
+        fabMenu.classList.toggle('active', isMenuOpen);
+        
+        if (isMenuOpen) {
+            fabIcon.className = 'fas fa-times';
+            fab.style.transform = 'rotate(45deg)';
+        } else {
+            fabIcon.className = 'fas fa-plus';
+            fab.style.transform = 'rotate(0deg)';
+        }
+    });
+    
+    // FAB Menu Actions
+    document.querySelectorAll('.fab-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            const action = e.currentTarget.dataset.action;
+            
+            switch(action) {
+                case 'menu':
+                    document.getElementById('menu').scrollIntoView({ behavior: 'smooth' });
+                    break;
+                case 'contact':
+                    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+                    break;
+                case 'top':
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    break;
+                case 'theme':
+                    document.getElementById('themeToggle')?.click();
+                    break;
+            }
+            
+            // Close menu after action
+            isMenuOpen = false;
+            fabMenu.classList.remove('active');
+            fabIcon.className = 'fas fa-plus';
+            fab.style.transform = 'rotate(0deg)';
+            
+            // Track FAB usage
+            if (window.analytics) {
+                window.analytics.track('fab_action', { action });
+            }
+        });
+    });
+    
+    // Hide FAB when scrolling down, show when scrolling up
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY && window.scrollY > 300) {
+            fab.style.transform = 'translateY(100px)';
+        } else {
+            fab.style.transform = 'translateY(0)';
+        }
+        lastScrollY = window.scrollY;
+    });
+}
+
+// Cursor Trail Effect
+function initCursorTrail() {
+    const trails = [];
+    const trailLength = 10;
+    
+    // Create trail elements
+    for (let i = 0; i < trailLength; i++) {
+        const trail = document.createElement('div');
+        trail.className = 'cursor-trail';
+        trail.style.opacity = (trailLength - i) / trailLength * 0.5;
+        document.body.appendChild(trail);
+        trails.push({
+            element: trail,
+            x: 0,
+            y: 0,
+            targetX: 0,
+            targetY: 0
+        });
+    }
+    
+    // Update cursor position
+    document.addEventListener('mousemove', (e) => {
+        trails[0].targetX = e.clientX - 4;
+        trails[0].targetY = e.clientY - 4;
+    });
+    
+    // Animate trail
+    function animateTrail() {
+        for (let i = 0; i < trails.length; i++) {
+            const trail = trails[i];
+            
+            if (i === 0) {
+                trail.x += (trail.targetX - trail.x) * 0.4;
+                trail.y += (trail.targetY - trail.y) * 0.4;
+            } else {
+                const prevTrail = trails[i - 1];
+                trail.x += (prevTrail.x - trail.x) * 0.3;
+                trail.y += (prevTrail.y - trail.y) * 0.3;
+            }
+            
+            trail.element.style.left = trail.x + 'px';
+            trail.element.style.top = trail.y + 'px';
+        }
+        
+        requestAnimationFrame(animateTrail);
+    }
+    
+    animateTrail();
+    
+    // Hide trails when cursor leaves window
+    document.addEventListener('mouseleave', () => {
+        trails.forEach(trail => {
+            trail.element.style.opacity = '0';
+        });
+    });
+    
+    document.addEventListener('mouseenter', () => {
+        trails.forEach((trail, index) => {
+            trail.element.style.opacity = (trailLength - index) / trailLength * 0.5;
+        });
+    });
+}
+
+// Interactive Background Particles
+function initBackgroundParticles() {
+    const heroSection = document.getElementById('home');
+    const particleCount = 15;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'bg-particle';
+        
+        const size = Math.random() * 60 + 20;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 6 + 's';
+        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        
+        heroSection.appendChild(particle);
+    }
+    
+    // Mouse interaction with particles
+    heroSection.addEventListener('mousemove', (e) => {
+        const particles = heroSection.querySelectorAll('.bg-particle');
+        const rect = heroSection.getBoundingClientRect();
+        const mouseX = (e.clientX - rect.left) / rect.width;
+        const mouseY = (e.clientY - rect.top) / rect.height;
+        
+        particles.forEach(particle => {
+            const particleRect = particle.getBoundingClientRect();
+            const particleX = (particleRect.left + particleRect.width / 2 - rect.left) / rect.width;
+            const particleY = (particleRect.top + particleRect.height / 2 - rect.top) / rect.height;
+            
+            const deltaX = mouseX - particleX;
+            const deltaY = mouseY - particleY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (distance < 0.3) {
+                const force = (0.3 - distance) / 0.3;
+                const moveX = -deltaX * force * 50;
+                const moveY = -deltaY * force * 50;
+                
+                particle.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            } else {
+                particle.style.transform = 'translate(0, 0)';
+            }
+        });
+    });
+}
+
+// Page Transition Effects
+function initPageTransitions() {
+    // Add entrance animation to all sections
+    const sections = document.querySelectorAll('section');
+    
+    sections.forEach((section, index) => {
+        gsap.set(section, { opacity: 0, y: 30 });
+        
+        ScrollTrigger.create({
+            trigger: section,
+            start: 'top 85%',
+            onEnter: () => {
+                gsap.to(section, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.8,
+                    delay: index * 0.1,
+                    ease: 'power2.out'
+                });
+            },
+            once: true
+        });
+    });
+}
+
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     initCookieConsent();
     initMobileMenu();
     initDarkMode();
-    // Language switching removed
+    initScrollHeader();
+    initScrollProgress();
     initHeroSlider();
     loadMenuItems();
     initContactForm();
@@ -532,6 +935,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initLazyLoading();
     initPerformanceMonitoring();
+    initStatsCounter();
+    initFloatingActionButton();
+    initCursorTrail();
+    initBackgroundParticles();
+    initPageTransitions();
     
     // Delay micro-interactions to ensure elements are loaded
     setTimeout(initMicroInteractions, 500);
