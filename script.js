@@ -11,9 +11,9 @@ let performanceData = {
 
 // Static text messages in English
 const messages = {
-    required: 'This field is required',
-    invalidEmail: 'Please enter a valid email address',
-    thankYou: 'Thank you for your message! We will get back to you soon.'
+    required: 'Please fill in this field',
+    invalidEmail: 'Please enter a valid email format',
+    thankYou: 'Message sent successfully! We will contact you shortly.'
 };
 
 // Cookie Consent
