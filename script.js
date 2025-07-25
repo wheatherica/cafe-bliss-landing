@@ -242,8 +242,25 @@ function showOrderFeedback(button) {
 function initContactForm() {
     const form = document.getElementById('contactForm');
     
+    // Set form to novalidate to prevent browser validation
+    form.setAttribute('novalidate', 'true');
+    
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+        
+        // Prevent default browser validation messages
+        const inputs = form.querySelectorAll('input, textarea');
+        inputs.forEach(input => {
+            input.addEventListener('invalid', (e) => {
+                e.preventDefault();
+                const field = e.target;
+                if (!field.value.trim()) {
+                    showError(field, field.nextElementSibling, messages.required);
+                } else if (field.type === 'email' && field.value) {
+                    showError(field, field.nextElementSibling, messages.invalidEmail);
+                }
+            });
+        });
         
         if (validateForm()) {
             // Save to localStorage
